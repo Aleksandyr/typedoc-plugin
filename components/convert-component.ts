@@ -24,6 +24,7 @@ export class ConvertComponent extends ConverterComponent {
             [Converter.EVENT_RESOLVE_BEGIN]: this.onResolveBegin,
             [Converter.EVENT_RESOLVE_END]: this.onResolveEnd,
             [Converter.EVENT_END]: this.onEnd,
+            [Converter.EVENT_BEGIN]: this.onBegin
         });
 
         this.fileOperations = new FileOperations(this.application.logger);
@@ -32,26 +33,47 @@ export class ConvertComponent extends ConverterComponent {
         }
     }
 
+    private onBegin(...rest) {
+        const options = this.application.options.getRawValues();
+        if (!options.generate) {
+            return;
+        }
+    }
+
     private onEnd(...rest) {
         const options = this.application.options.getRawValues();
         if (options.generate) {
             process.exit(0);
         }
+
+        if (this.fileOperations.ifDirectoryExists(options.out) || this.fileOperations.ifFileExists(options.out)) {
+            this.fileOperations.removeDirectoryOrFile(options.out);
+        }
     }
 
     private onResolveBegin(context) {
+        const options = this.application.options.getRawValues();
+        if(!options.generate) {
+            return;
+        }
+
         const files = context.project.files;
         this.fileOperations.prepareOutputDirectory(files, MAIN_DIR)
     }
 
     private onResolveEnd(...rest) {
         // Add the last resolved object
-        if (!this.factory.isEmpty()) {                    
+        if (this.factory && !this.factory.isEmpty()) {                    
             this.fileOperations.createFileJSON(this.reflection, this.factory, MAIN_DIR);
         }
     }
 
     private resolve(context, reflection) {
+        const options = this.application.options.getRawValues();
+        if(!options.generate) {
+            return;
+        }
+
         switch(reflection.kind) {
             case ReflectionKind.Enum:
             case ReflectionKind.Class:

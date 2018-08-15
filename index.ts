@@ -5,7 +5,8 @@ import { OptComponent } from './components/options-component';
 
 module.exports = (PluginHost: Application) => {
     const app = PluginHost.owner;
-    // console.log('TEST');
+
+    console.log("TEST");
     app.options.addComponent('options-component', OptComponent);
     app.converter.addComponent('convert-component', ConvertComponent);
     app.renderer.addComponent('render-component', RenderComponenet)

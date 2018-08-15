@@ -32,11 +32,21 @@ export class FileOperations {
         }
     }
 
-    public removeDirectory(dirName) {
+    public ifFileExists(filePath) {
+        if(fs.existsSync(filePath)) {
+            if (!fs.statSync(filePath).isFile) {
+                this.logger.error(`The ouput targets exists ${path} but it is not a file!`);
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public removeDirectoryOrFile(path) {
         try {
-            fs.removeSync(dirName)
+            fs.removeSync(path)
         } catch(err) {
-            this.logger.warn('Could not clear the directory!');
+            this.logger.warn(`Could not clear the directory or path: ${path}!`);
             return false;
         }
 
@@ -91,5 +101,12 @@ export class FileOperations {
         const currentFileFd = this.openFileSync(`${mainDir}\\${splitPath}`, `${factoryObject.name}.json`);
         fs.writeSync(currentFileFd, JSON.stringify(factoryObject.getFileClassContent(), null, 4));
         this.closeFileSync(currentFileFd);
+    }
+
+    public getFileJSONData(filePath, fileName) {
+        // const currentFileFd = this.openFileSync(filePath, `${fileName}.json`);
+        const data = fs.readJsonSync(`${filePath}\\${fileName}.json`);
+        // this.closeFileSync(currentFileFd);
+        return data;
     }
 }
