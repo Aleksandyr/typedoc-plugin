@@ -72,7 +72,7 @@ export class FileOperations {
     public prepareOutputDirectory(fileObjects, mainExportDir) {
         fileObjects.forEach(element => {
             const parsedPath = path.parse(element.fileName);
-            const dirToExport = this.getDirToExport(parsedPath);
+            const dirToExport = this.getProcessedDir(parsedPath);
             if (dirToExport === null || parsedPath.root !== "") {
                 return;
             }
@@ -82,7 +82,7 @@ export class FileOperations {
         });
     }
 
-    public getDirToExport(parsedPath) {
+    public getProcessedDir(parsedPath) {
         const splitPath = parsedPath.dir.split('/');
         const fileStructureDir = splitPath[0];
         const componentDir = splitPath[1];
@@ -97,16 +97,18 @@ export class FileOperations {
 
     public createFileJSON(reflection, factoryObject, mainDir) {
         const filePath = path.parse(reflection.sources[0].fileName);
-        const splitPath = this.getDirToExport(filePath);
+        const splitPath = this.getProcessedDir(filePath);
         const currentFileFd = this.openFileSync(`${mainDir}\\${splitPath}`, `${factoryObject.name}.json`);
         fs.writeSync(currentFileFd, JSON.stringify(factoryObject.getFileClassContent(), null, 4));
         this.closeFileSync(currentFileFd);
     }
 
     public getFileJSONData(filePath, fileName) {
-        // const currentFileFd = this.openFileSync(filePath, `${fileName}.json`);
-        const data = fs.readJsonSync(`${filePath}\\${fileName}.json`);
-        // this.closeFileSync(currentFileFd);
-        return data;
+        const jsonFilePath = `${filePath}\\${fileName}.json`
+        if (!this.ifDirectoryExists(filePath) || !this.ifFileExists(jsonFilePath)) {
+            return null;
+        }
+        
+        return fs.readJsonSync(`${filePath}\\${fileName}.json`);
     }
 }

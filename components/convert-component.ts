@@ -112,8 +112,23 @@ export class ConvertComponent extends ConverterComponent {
         }
     }
 
-    private getCommentText(reflection) {
-        return reflection.comment ? reflection.comment.shortText : null; 
+    private getCommentText(obj) {
+        if (!obj.comment) {
+            return;
+        }
+
+        const comment = {};
+        comment['comment'] = {};
+        
+        if(obj.comment.text) {
+            comment['comment']['text'] = obj.comment.text;
+        }
+
+        if(obj.comment.shortText) {
+            comment['comment']['shortText'] = obj.comment.shortText;
+        }
+        
+        return comment;
     }
 
     private instanceBuilder(objectType, objectName): Factory {

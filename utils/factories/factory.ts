@@ -15,7 +15,7 @@ export abstract class Factory {
         }
 
         if (data) {
-            this.fileClassContent[this.name]['comment'] = data;
+            this.fileClassContent[this.name] = data;
         }
     }
 

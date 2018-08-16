@@ -28,7 +28,5 @@ export class JsonObjectEnumFactory extends Factory {
         return !Object.keys(this.fileClassContent[this.name][ENUM_MEMBER_KEY]).length;
     }
     
-    public appendAccessorsAttribute(kind: any, parentName: any, accessorType: any, accessorName: any, data: any) {
-        throw new Error("Method not implemented.");
-    }
+    public appendAccessorsAttribute(kind: any, parentName: any, accessorType: any, accessorName: any, data: any) { };
 }
